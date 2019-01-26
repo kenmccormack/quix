@@ -1,0 +1,23 @@
+<launch>
+
+    <include file="$(find quix_2dnav)/launch/quix_configuration.launch"/>
+
+    <!-- turtlesim stuff -->
+    <node pkg="turtlesim"
+          type="turtlesim_node"
+          name="the_turtle_node">
+            <remap from="/turtle1/cmd_vel" to="/cmd_vel"/>
+    </node>
+
+    <!-- The scan simulator -->
+  <node name="light_scan_sim" 
+        pkg="light_scan_sim" 
+        type="light_scan_sim_node" 
+        output="screen">
+           <rosparam file="$(find quix_2dnav)/configuration/light_scan_params.yaml" command="load" />
+  </node>
+
+
+
+
+</launch>

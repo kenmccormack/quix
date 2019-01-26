@@ -14,6 +14,10 @@ class GenOdom
     ros::Publisher odom_pub;
     ros::Subscriber pose_sub; 
 
+    geometry_msgs::TransformStamped odom_trans;
+    nav_msgs::Odometry odom;
+
+
 
     GenOdom(ros::NodeHandle nh){
         odom_pub = nh.advertise<nav_msgs::Odometry>("odom", 50);
@@ -21,9 +25,19 @@ class GenOdom
     }
 
     void pose_callback(const turtlesim::Pose::ConstPtr &);
+    void publish_odom();
 
 
 };
+
+void GenOdom::publish_odom()
+{
+     odom_trans.header.stamp = ros::Time::now();
+     odom_pub.publish(odom);
+
+     odom_broadcaster.sendTransform(odom_trans);
+
+}
 
 void GenOdom::pose_callback(const turtlesim::Pose::ConstPtr& msg)
 {
@@ -36,9 +50,7 @@ void GenOdom::pose_callback(const turtlesim::Pose::ConstPtr& msg)
     geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(msg->theta);
 
     //first, we'll publish the transform over tf
-    geometry_msgs::TransformStamped odom_trans;
-    odom_trans.header.stamp = current_time;
-    odom_trans.header.frame_id = "odom";
+    odom_trans.header.frame_id = "map";
     odom_trans.child_frame_id = "base_link";
 
     odom_trans.transform.translation.x = msg->x;
@@ -46,13 +58,10 @@ void GenOdom::pose_callback(const turtlesim::Pose::ConstPtr& msg)
     odom_trans.transform.translation.z = 0.0;
     odom_trans.transform.rotation = odom_quat;
 
-    //send the transform
-    odom_broadcaster.sendTransform(odom_trans);
-
+   
     //next, we'll publish the odometry message over ROS
-    nav_msgs::Odometry odom;
     odom.header.stamp = current_time;
-    odom.header.frame_id = "odom";
+    odom.header.frame_id = "map";
 
     //set the position
     odom.pose.pose.position.x = msg->x;
@@ -66,8 +75,7 @@ void GenOdom::pose_callback(const turtlesim::Pose::ConstPtr& msg)
     odom.twist.twist.linear.y = msg->linear_velocity * sin(msg->theta);
     odom.twist.twist.angular.z = msg->angular_velocity;
 
-    //publish the message
-    odom_pub.publish(odom);
+  
 
 
 }
@@ -80,9 +88,14 @@ int main(int argc, char** argv){
   GenOdom go(n);
 
   
-  ros::Rate r(1.0);
+  ros::Rate r(20);
+
   while(n.ok()){
-    ros::spinOnce();               // check for incoming messages
-    r.sleep();
+     ros::spinOnce();               // check for incoming messages
+     
+     //publish the message
+     go.publish_odom();
+   
+     r.sleep();
   }
 }
