@@ -15,8 +15,10 @@ class MoveBaseSeq():
     def __init__(self):
 
         rospy.init_node('move_base_sequence')
-        points_seq = rospy.get_param('move_base_seq/p_seq')
-        yaweulerangles_seq = rospy.get_param('move_base_seq/yea_seq')
+        #points_seq = rospy.get_param('move_base_seq/p_seq')
+        points_seq = [3,5,0,3,7,0,5,7,0,5,5,0,3,5,0]
+        #yaweulerangles_seq = rospy.get_param('move_base_seq/yea_seq')
+        yaweulerangles_seq = [90, 90 , -90 , -90, 90]
         quat_seq = list()
         self.pose_seq = list()
         self.goal_cnt = 0
@@ -24,6 +26,7 @@ class MoveBaseSeq():
             quat_seq.append(Quaternion(*(quaternion_from_euler(0, 0, yawangle*math.pi/180, axes='sxyz'))))
         n = 3
         points = [points_seq[i:i+n] for i in range(0, len(points_seq), n)]
+        print points
         for point in points:
             self.pose_seq.append(Pose(Point(*point),quat_seq[n-3]))
             n += 1
