@@ -15,10 +15,10 @@ class MoveBaseSeq():
     def __init__(self):
 
         rospy.init_node('move_base_sequence')
-        #points_seq = rospy.get_param('move_base_seq/p_seq')
-        points_seq = [3,5,0,3,7,0,5,7,0,5,5,0,3,5,0]
-        #yaweulerangles_seq = rospy.get_param('move_base_seq/yea_seq')
-        yaweulerangles_seq = [90, 90 , -90 , -90, 90]
+        points_seq = rospy.get_param('move_base_seq/p_seq')
+        #points_seq = [3,5,0,3,7,0,5,7,0,5,5,0,3,5,0]
+        yaweulerangles_seq = rospy.get_param('move_base_seq/yea_seq')
+        #yaweulerangles_seq = [90, 90 , -90 , -90, 90]
         quat_seq = list()
         self.pose_seq = list()
         self.goal_cnt = 0

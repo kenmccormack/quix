@@ -1,5 +1,6 @@
 <launch>
 
+    <!-- convert the turtle pose into an odom message -->
     <include file="$(find quix_2dnav)/launch/quix_configuration.launch"/>
 
     <!-- turtlesim stuff -->
